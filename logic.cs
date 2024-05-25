@@ -10,6 +10,7 @@ public class KeyPressListener
     // Sound file locations
     private static readonly string hebrewPath = "sounds\\Hebrew.wav";
     private static readonly string englishPath = "sounds\\English.wav";
+    private static readonly string IDKPath = "sounds\\IDK.wav";
     
     // Record the time of the last key press
     private static long lastKeyPressTime = 0;
@@ -22,6 +23,11 @@ public class KeyPressListener
     private static IntPtr _hookID = IntPtr.Zero;
 
     public bool IsRunning { get; private set; } = false;
+
+    public void SetDelay(double newDelay)
+    {
+        delay = (long)newDelay;
+    }
 
     public void Start()
     {
@@ -82,11 +88,13 @@ public class KeyPressListener
 
             if (currentTime - lastKeyPressTime >= delay || lastLanguage != currLanguage)
             {
+                // todo add all the possibilities for us
                 if (currLanguage == "English" || currLanguage == "United States" || currLanguage == "אנגלית (ארצות הברית)")
                     PlaySound(englishPath);
-                else
+                else if(currLanguage == "Hebrew" || currLanguage=="עברית" || currLanguage=="עברית (ישראל)")
                     PlaySound(hebrewPath);
-
+                else
+                    PlaySound(IDKPath);
                 // Update the last key press time
                 lastKeyPressTime = currentTime;
                 // Update the last language
