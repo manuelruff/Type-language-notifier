@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Media;
+using System.Globalization;
 
 class KeyPressListener
 {
@@ -13,8 +14,8 @@ class KeyPressListener
     // Record the time of the last key press
     private static long lastKeyPressTime = 0;
     // Define the delay in milliseconds (30 seconds)
-    private static readonly long delay = (long)TimeSpan.FromSeconds(30).TotalMilliseconds;
-    //save last language we used, if changed we will egnore delay
+    private static readonly long delay = (long)TimeSpan.FromSeconds(2).TotalMilliseconds;
+    // Save the last language we used, if changed we will ignore delay
     private static string lastLanguage = InputLanguage.CurrentInputLanguage.LayoutName; 
 
     private static LowLevelKeyboardProc _proc = HookCallback;
@@ -23,8 +24,22 @@ class KeyPressListener
     static void Main(string[] args)
     {
         Console.WriteLine("Key Press Listener started. Press Enter to exit.");
-
+        string lang = InputLanguage.CurrentInputLanguage.Culture.Name;
+        Console.WriteLine(InputLanguage.CurrentInputLanguage.LayoutName);
+        Console.WriteLine("Current language: " + lang);
+        Console.WriteLine(CultureInfo.CurrentCulture.KeyboardLayoutId);
+        Console.WriteLine(CultureInfo.CurrentCulture.EnglishName);
+        
+        Console.WriteLine("switch");
+        lang = InputLanguage.CurrentInputLanguage.Culture.Name;
+        Console.WriteLine("Current language: " + lang);
+        Console.WriteLine(InputLanguage.CurrentInputLanguage.LayoutName);
+        Console.WriteLine(CultureInfo.CurrentCulture.KeyboardLayoutId);
+        Console.WriteLine(CultureInfo.CurrentCulture.EnglishName);
         _hookID = SetHook(_proc);
+
+        // Print the initial language
+        Console.WriteLine("Initial language: " + lastLanguage);
 
         // Check if the hook was set successfully
         if (_hookID == IntPtr.Zero)
@@ -63,22 +78,30 @@ class KeyPressListener
             int vkCode = Marshal.ReadInt32(lParam);
             Console.WriteLine($"Key down: {(Keys)vkCode}");
             long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            // Check what language is currently selected
-            InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
-            string currLanguage = myCurrentLanguage.LayoutName;
+
+            // Get the current keyboard layout
+            string currLanguage = GetCurrentKeyboardLayout();
+
+            // Debug: Print the current and last language
+            Console.WriteLine($"Current language: {currLanguage}");
+            Console.WriteLine($"Last language: {lastLanguage}");
+
             if (currentTime - lastKeyPressTime >= delay || lastLanguage != currLanguage)
             {
-                if (currLanguage == "ארצות הברית" || currLanguage == "United States")
+                if (currLanguage == "English" || currLanguage == "United States")
                     PlaySound(englishPath);
                 else
                     PlaySound(hebrewPath);
 
                 // Update the last key press time
                 lastKeyPressTime = currentTime;
+                // Update the last language
+                lastLanguage = currLanguage; // Ensure lastLanguage is updated
             }
         }
         return CallNextHookEx(_hookID, nCode, wParam, lParam);
     }
+
 
     private static void PlaySound(string languagePath)
     {
@@ -94,6 +117,16 @@ class KeyPressListener
             Console.WriteLine("Error with playing sound: " + e.Message);
         }
     }
+    private static string GetCurrentKeyboardLayout()
+    {
+        IntPtr foregroundWindow = GetForegroundWindow();
+        uint processId;
+        uint threadId = GetWindowThreadProcessId(foregroundWindow, out processId);
+        IntPtr layout = GetKeyboardLayout(threadId);
+        int layoutInt = layout.ToInt32() & 0xFFFF;
+        return new System.Globalization.CultureInfo(layoutInt).DisplayName;
+    }
+
 
     private const int WH_KEYBOARD_LL = 13;
     private const int WM_KEYDOWN = 0x0100;
@@ -110,4 +143,15 @@ class KeyPressListener
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr GetKeyboardLayout(uint idThread);
+
+    [DllImport("user32.dll")]
+    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr GetForegroundWindow();
+
+
 }
