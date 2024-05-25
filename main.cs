@@ -14,6 +14,8 @@ class KeyPressListener
     private static long lastKeyPressTime = 0;
     // Define the delay in milliseconds (30 seconds)
     private static readonly long delay = (long)TimeSpan.FromSeconds(30).TotalMilliseconds;
+    //save last language we used, if changed we will egnore delay
+    private static string lastLanguage = InputLanguage.CurrentInputLanguage.LayoutName; 
 
     private static LowLevelKeyboardProc _proc = HookCallback;
     private static IntPtr _hookID = IntPtr.Zero;
@@ -24,8 +26,19 @@ class KeyPressListener
 
         _hookID = SetHook(_proc);
 
-        // Keep the application running
-        Console.ReadLine();
+        // Check if the hook was set successfully
+        if (_hookID == IntPtr.Zero)
+        {
+            Console.WriteLine("Failed to set hook.");
+            return;
+        }
+        else
+        {
+            Console.WriteLine("Hook set successfully.");
+        }
+
+        // Use Application.Run to keep the application running efficiently
+        Application.Run();
 
         UnhookWindowsHookEx(_hookID);
 
@@ -50,12 +63,12 @@ class KeyPressListener
             int vkCode = Marshal.ReadInt32(lParam);
             Console.WriteLine($"Key down: {(Keys)vkCode}");
             long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            if (currentTime - lastKeyPressTime >= delay)
+            // Check what language is currently selected
+            InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
+            string currLanguage = myCurrentLanguage.LayoutName;
+            if (currentTime - lastKeyPressTime >= delay || lastLanguage != currLanguage)
             {
-                // Check what language is currently selected
-                InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
-                string language = myCurrentLanguage.LayoutName;
-                if (language == "ארצות הברית" || language == "United States")
+                if (currLanguage == "ארצות הברית" || currLanguage == "United States")
                     PlaySound(englishPath);
                 else
                     PlaySound(hebrewPath);
