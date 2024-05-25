@@ -6,10 +6,12 @@ public class ControlForm : Form
 {
     private Button startButton;
     private Button stopButton;
-    private Process notifierProcess;
+    private KeyPressListener keyPressListener;
 
     public ControlForm()
     {
+        keyPressListener = new KeyPressListener();
+
         startButton = new Button
         {
             Text = "Start",
@@ -22,7 +24,8 @@ public class ControlForm : Form
         {
             Text = "Stop",
             Location = new System.Drawing.Point(100, 10),
-            AutoSize = true
+            AutoSize = true,
+            Enabled = false
         };
         stopButton.Click += StopButton_Click;
 
@@ -32,35 +35,29 @@ public class ControlForm : Form
 
     private void StartButton_Click(object sender, EventArgs e)
     {
-        if (notifierProcess == null || notifierProcess.HasExited)
+        if (!keyPressListener.IsRunning)
         {
-            notifierProcess = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "TypeLanguageNotifier.exe",
-                    WorkingDirectory = @"C:\path\to\your\publish\directory", // Update this path
-                    UseShellExecute = false
-                }
-            };
-            notifierProcess.Start();
+            keyPressListener.Start();
+            startButton.Enabled = false;
+            stopButton.Enabled = true;
         }
         else
         {
-            MessageBox.Show("TypeLanguageNotifier is already running.");
+            MessageBox.Show("KeyPressListener is already running.");
         }
     }
 
     private void StopButton_Click(object sender, EventArgs e)
     {
-        if (notifierProcess != null && !notifierProcess.HasExited)
+        if (keyPressListener.IsRunning)
         {
-            notifierProcess.Kill();
-            notifierProcess = null;
+            keyPressListener.Stop();
+            startButton.Enabled = true;
+            stopButton.Enabled = false;
         }
         else
         {
-            MessageBox.Show("TypeLanguageNotifier is not running.");
+            MessageBox.Show("KeyPressListener is not running.");
         }
     }
 }
