@@ -82,10 +82,6 @@ public class KeyPressListener
             // Get the current keyboard layout
             string currLanguage = GetCurrentKeyboardLayout();
 
-            // Debug: Print the current and last language
-            Console.WriteLine($"Current language: {currLanguage}");
-            Console.WriteLine($"Last language: {lastLanguage}");
-
             if (currentTime - lastKeyPressTime >= delay || lastLanguage != currLanguage)
             {
                 // todo add all the possibilities for us
