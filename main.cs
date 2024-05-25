@@ -17,28 +17,28 @@ class KeyPressListener
 
     static void Main(string[] args)
     {
-        Console.WriteLine("Key Press Listener started. Press 'Esc' to exit.");
+        Console.WriteLine("Key Press Listener started. Press Enter to exit.");
 
         // Set up the global keyboard hook
         _hook = Hook.GlobalEvents();
+
         // Subscribe to the KeyDown event
         _hook.KeyDown += KeyDown;
 
         // Keep the application running
-        while (true)
-        {
-            if (Console.ReadKey(true).Key == ConsoleKey.Escape)
-            {
-                break;
-            }
-        }
+        Console.ReadLine();
 
         // Unsubscribe from the event and dispose the hook
         _hook.KeyDown -= KeyDown;
         _hook.Dispose();
+
+        Console.WriteLine("Unsubscribed from KeyDown event and disposed the hook.");
     }
+
     private static void KeyDown(object sender, KeyEventArgs e)
     {
+        Console.WriteLine($"Key down: {e.KeyCode}"); // Debug statement to ensure event is triggered
+
         long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         // Check if enough time has passed since the last key press
         if (currentTime - lastKeyPressTime >= delay)
@@ -50,7 +50,7 @@ class KeyPressListener
                 PlaySound(englishPath);
             else
                 PlaySound(hebrewPath);
-            
+
             // Update the last key press time
             lastKeyPressTime = currentTime;
         }
