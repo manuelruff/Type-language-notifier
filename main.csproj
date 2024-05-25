@@ -6,9 +6,9 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>TypeLanguageNotifier</AssemblyName>
   </PropertyGroup>
 
-  
   <ItemGroup>
     <PackageReference Include="System.Windows.Extensions" Version="6.0.0" />
   </ItemGroup>
@@ -18,5 +18,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="kill_process.bat" IgnoreExitCode="true" />
+  </Target>
 
 </Project>

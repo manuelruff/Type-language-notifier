@@ -16,7 +16,7 @@ class KeyPressListener
     // Define the delay in milliseconds (30 seconds)
     private static readonly long delay = (long)TimeSpan.FromSeconds(2).TotalMilliseconds;
     // Save the last language we used, if changed we will ignore delay
-    private static string lastLanguage = InputLanguage.CurrentInputLanguage.LayoutName; 
+    private static string lastLanguage = GetCurrentKeyboardLayout(); 
 
     private static LowLevelKeyboardProc _proc = HookCallback;
     private static IntPtr _hookID = IntPtr.Zero;
@@ -24,22 +24,8 @@ class KeyPressListener
     static void Main(string[] args)
     {
         Console.WriteLine("Key Press Listener started. Press Enter to exit.");
-        string lang = InputLanguage.CurrentInputLanguage.Culture.Name;
-        Console.WriteLine(InputLanguage.CurrentInputLanguage.LayoutName);
-        Console.WriteLine("Current language: " + lang);
-        Console.WriteLine(CultureInfo.CurrentCulture.KeyboardLayoutId);
-        Console.WriteLine(CultureInfo.CurrentCulture.EnglishName);
         
-        Console.WriteLine("switch");
-        lang = InputLanguage.CurrentInputLanguage.Culture.Name;
-        Console.WriteLine("Current language: " + lang);
-        Console.WriteLine(InputLanguage.CurrentInputLanguage.LayoutName);
-        Console.WriteLine(CultureInfo.CurrentCulture.KeyboardLayoutId);
-        Console.WriteLine(CultureInfo.CurrentCulture.EnglishName);
         _hookID = SetHook(_proc);
-
-        // Print the initial language
-        Console.WriteLine("Initial language: " + lastLanguage);
 
         // Check if the hook was set successfully
         if (_hookID == IntPtr.Zero)
@@ -88,7 +74,7 @@ class KeyPressListener
 
             if (currentTime - lastKeyPressTime >= delay || lastLanguage != currLanguage)
             {
-                if (currLanguage == "English" || currLanguage == "United States")
+                if (currLanguage == "English" || currLanguage == "United States" || currLanguage == "אנגלית (ארצות הברית)")
                     PlaySound(englishPath);
                 else
                     PlaySound(hebrewPath);
@@ -155,3 +141,90 @@ class KeyPressListener
 
 
 }
+
+
+
+
+
+/**
+
+        // Method 3: Using GetKeyboardLayout and foreground window's thread ID
+        string langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+
+    // Method 1: Using InputLanguage.CurrentInputLanguage
+        string langInputLanguage = InputLanguage.CurrentInputLanguage.Culture.Name;
+        string layoutNameInputLanguage = InputLanguage.CurrentInputLanguage.LayoutName;
+
+        // Method 2: Using CultureInfo
+        int keyboardLayoutId = CultureInfo.CurrentCulture.KeyboardLayoutId;
+        string englishNameCulture = CultureInfo.CurrentCulture.EnglishName;
+
+        // Method 3: Using GetKeyboardLayout and foreground window's thread ID
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+
+        // Print results
+        Console.WriteLine("Initial language detection:");
+        Console.WriteLine("InputLanguage.CurrentInputLanguage:");
+        Console.WriteLine("Current language: " + langInputLanguage);
+        Console.WriteLine("Layout Name: " + layoutNameInputLanguage);
+
+        Console.WriteLine("CultureInfo.CurrentCulture:");
+        Console.WriteLine("Keyboard Layout ID: " + keyboardLayoutId);
+        Console.WriteLine("English Name: " + englishNameCulture);
+
+        Console.WriteLine("GetKeyboardLayout:");
+        Console.WriteLine("Current language: " + langKeyboardLayout);
+
+        Console.WriteLine("Switch language and press Enter to check again...");
+
+        // Check languages again after switching
+        langInputLanguage = InputLanguage.CurrentInputLanguage.Culture.Name;
+        layoutNameInputLanguage = InputLanguage.CurrentInputLanguage.LayoutName;
+
+        keyboardLayoutId = CultureInfo.CurrentCulture.KeyboardLayoutId;
+        englishNameCulture = CultureInfo.CurrentCulture.EnglishName;
+
+        langKeyboardLayout = GetCurrentKeyboardLayout();
+
+        // Print results after switching
+        Console.WriteLine("After switching language:");
+        Console.WriteLine("InputLanguage.CurrentInputLanguage:");
+        Console.WriteLine("Current language: " + langInputLanguage);
+        Console.WriteLine("Layout Name: " + layoutNameInputLanguage);
+
+        Console.WriteLine("CultureInfo.CurrentCulture:");
+        Console.WriteLine("Keyboard Layout ID: " + keyboardLayoutId);
+        Console.WriteLine("English Name: " + englishNameCulture);
+
+        Console.WriteLine("GetKeyboardLayout:");
+        Console.WriteLine("Current language: " + langKeyboardLayout);
+
+
+
+        Console.WriteLine("Switch language and press Enter to check again...");
+        Console.ReadLine();
+
+
+
+
+string lang = InputLanguage.CurrentInputLanguage.Culture.Name;
+        Console.WriteLine(InputLanguage.CurrentInputLanguage.LayoutName);
+        Console.WriteLine("Current language: " + lang);
+        Console.WriteLine(CultureInfo.CurrentCulture.KeyboardLayoutId);
+        Console.WriteLine(CultureInfo.CurrentCulture.EnglishName);
+        
+        Console.WriteLine("switch");
+        lang = InputLanguage.CurrentInputLanguage.Culture.Name;
+        Console.WriteLine("Current language: " + lang);
+        Console.WriteLine(InputLanguage.CurrentInputLanguage.LayoutName);
+        Console.WriteLine(CultureInfo.CurrentCulture.KeyboardLayoutId);
+        Console.WriteLine(CultureInfo.CurrentCulture.EnglishName);
+**/
+
