@@ -5,7 +5,12 @@ __pycache__/
 
 # C extensions
 *.so
-
+.vscode
+obj
+bin
+out
+.idea
+*.sln
 # Distribution / packaging
 .Python
 build/

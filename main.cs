@@ -3,6 +3,7 @@ using System.IO;
 using System.Media;
 using System.Threading;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 class KeyPressListener
 {
@@ -17,6 +18,13 @@ class KeyPressListener
     static void Main(string[] args)
     {
         Console.WriteLine("Key Press Listener started. Press any key to exit.");
+        // Gets the current input language.
+        InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
+
+        if(myCurrentLanguage != null) 
+            Console.WriteLine("Layout: " + myCurrentLanguage.LayoutName);
+        else
+            Console.WriteLine("There is no current language");        
 
         // Start listening for key presses
         HookKeyboard();
@@ -24,6 +32,7 @@ class KeyPressListener
         // Keep the application running
         Console.ReadLine();
     }
+
 
     /**
      * Plays a sound from the specified file location.
@@ -56,7 +65,14 @@ class KeyPressListener
             // Check if enough time has passed since the last key press
             if (currentTime - lastKeyPressTime >= delay)
             {
-                PlaySound(hebrewPath);
+                // check what language is currently selected
+                InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
+                string language = myCurrentLanguage.LayoutName;
+                if(language == "ארצות הברית" || language == "United States")
+                    PlaySound(englishPath);
+                else
+                    PlaySound(hebrewPath);   
+                PlaySound(language);
                 // Update the last key press time
                 lastKeyPressTime = currentTime;
             }
@@ -101,7 +117,6 @@ class KeyboardHook : IDisposable
     }
 
     private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-
     private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
     {
         if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
