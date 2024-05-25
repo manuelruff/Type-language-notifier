@@ -8,8 +8,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  
   <ItemGroup>
-    <PackageReference Include="MouseKeyHook" Version="5.7.1" />
+    <PackageReference Include="System.Windows.Extensions" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="sounds\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
