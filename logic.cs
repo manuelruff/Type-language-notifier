@@ -17,11 +17,12 @@ public class KeyPressListener
     // Define the delay in milliseconds (initially 2 seconds)
     private static long delay = (long)TimeSpan.FromSeconds(2).TotalMilliseconds;
     // Save the last language we used, if changed we will ignore delay
-    private static string lastLanguage = GetCurrentKeyboardLayout(); 
-
+    private static string lastLanguage = GetCurrentKeyboardLayout();
+    // Hook for capturing keyboard events
     private static LowLevelKeyboardProc _proc = HookCallback;
     private static IntPtr _hookID = IntPtr.Zero;
 
+    // Indicates whether the listener is currently running.
     public bool IsRunning { get; private set; } = false;
 
     public void SetDelay(double newDelay)
@@ -60,17 +61,21 @@ public class KeyPressListener
         }
     }
 
+    // Sets a low-level keyboard hook to capture key press events.
     private static IntPtr SetHook(LowLevelKeyboardProc proc)
     {
         using (Process curProcess = Process.GetCurrentProcess())
         using (ProcessModule curModule = curProcess.MainModule)
         {
+            // Set the hook and return the hook ID
             return SetWindowsHookEx(WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
         }
     }
 
+    // Delegate for the keyboard hook
     private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
 
+    // Callback function that handles keyboard events and plays sounds based on the current keyboard layout.
     private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
     {
         if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
@@ -84,7 +89,7 @@ public class KeyPressListener
 
             if (currentTime - lastKeyPressTime >= delay || lastLanguage != currLanguage)
             {
-                // todo add all the possibilities for us
+                //check what language is currently being used and play the corresponding sound
                 if (currLanguage == "English" || currLanguage == "United States" || currLanguage == "אנגלית (ארצות הברית)")
                     PlaySound(englishPath);
                 else if(currLanguage == "Hebrew" || currLanguage=="עברית" || currLanguage=="עברית (ישראל)")
@@ -94,7 +99,7 @@ public class KeyPressListener
                 // Update the last key press time
                 lastKeyPressTime = currentTime;
                 // Update the last language
-                lastLanguage = currLanguage; // Ensure lastLanguage is updated
+                lastLanguage = currLanguage; 
             }
         }
         return CallNextHookEx(_hookID, nCode, wParam, lParam);
@@ -115,6 +120,7 @@ public class KeyPressListener
         }
     }
 
+    // Retrieves the current keyboard layout as a display name.
     private static string GetCurrentKeyboardLayout()
     {
         IntPtr foregroundWindow = GetForegroundWindow();
@@ -125,28 +131,41 @@ public class KeyPressListener
         return new System.Globalization.CultureInfo(layoutInt).DisplayName;
     }
 
+
+
+    // Windows API constants, they are used so i can listen to the kyboard events and understand the current language.
+    // Constant for setting a low-level keyboard hook.
     private const int WH_KEYBOARD_LL = 13;
+    // Constants for keyboard events.
     private const int WM_KEYDOWN = 0x0100;
 
+    // Installs a hook procedure for keyboard events.
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
+    // Removes a previously installed hook procedure.
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
+    // Passes the hook information to the next hook procedure.
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
+    // Retrieves a module handle for the specified module.
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr GetModuleHandle(string lpModuleName);
 
+    // Retrieves the keyboard layout for the specified thread.
     [DllImport("user32.dll")]
     static extern IntPtr GetKeyboardLayout(uint idThread);
 
+    // Retrieves the process ID of the process that created the specified window.
     [DllImport("user32.dll")]
     static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
+    // Retrieves the handle to the window that has the focus.
     [DllImport("user32.dll")]
     static extern IntPtr GetForegroundWindow();
+
 }
