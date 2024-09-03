@@ -1,7 +1,7 @@
 
 # Type Language Notifier
 
-Type Language Notifier is a Windows application that listens for key presses and plays a sound based on the current keyboard layout (language). It features a simple GUI that allows you to start and stop the key press listener and set a delay interval between sounds.
+Type Language Notifier is a Windows application that listens for key presses and plays a corresponding sound based on the current keyboard layout
 
 ## Features
 
@@ -12,36 +12,13 @@ Type Language Notifier is a Windows application that listens for key presses and
 
 ## Getting Started
 
-### Prerequisites
-
-- [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) or later
-
-### Installation
-
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/your-username/type-language-notifier.git
-   cd type-language-notifier
-   ```
-
-2. Restore the project dependencies:
-   ```sh
-   dotnet restore
-   ```
-
 ### Usage
 
-1. Build the project:
-   ```sh
-   dotnet build
-   ```
+clone the repository
 
-2. Run the application:
-   ```sh
-   dotnet run --project main.csproj
-   ```
+To view the code, open it with Visual Studio.
 
-3. The GUI will appear. You can set the delay interval (in seconds) and start or stop the key press listener using the buttons provided.
+To use without accessing the code, navigate to Type-language-notifier\bin\Debug\net6.0-windows and run TypeLanguageNotifierControl.exe.
 
 ## Project Structure
 
@@ -49,30 +26,9 @@ Type Language Notifier is a Windows application that listens for key presses and
 - `gui.cs`: Contains the `ControlForm` class, which defines the GUI and its interactions.
 - `logic.cs`: Contains the `KeyPressListener` class, which implements the key press listening and sound playing logic.
 
+## to support other languages
 
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
-
-1. Fork the repository.
-2. Create a new branch:
-   ```sh
-   git checkout -b feature-branch
-   ```
-
-3. Make your changes.
-4. Commit your changes:
-   ```sh
-   git commit -m "Add some feature"
-   ```
-
-5. Push to the branch:
-   ```sh
-   git push origin feature-branch
-   ```
-
-6. Open a pull request.
-
+To add support for additional languages, download a WAV sound file for the desired language and place it in the 'sounds' directory. Then, add a new case statement in the HookCallback function in logic.cs for the new language.
 
 ## Contact
 
